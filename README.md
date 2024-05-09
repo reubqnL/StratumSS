@@ -1,16 +1,15 @@
 # StratumSS
 
-<table border="0">
-  <tr>
-    <td width="140" valign="middle">
-      <img src="/images/icon.png" alt="StratumSS Logo" width="120">
-    </td>
-    <td valign="middle">
-      <h1>StratumSS</h1>
-      <p>A human-readable CSS framework built around clear, explicit utility classes.</p>
-    </td>
-  </tr>
-</table>
+<div align="center">
+
+<img src="/images/icon.png" alt="StratumSS Logo" width="120">
+
+# StratumSS
+
+A human-readable CSS framework built around clear, explicit utility classes.
+
+</div>
+
 
 ---
 
