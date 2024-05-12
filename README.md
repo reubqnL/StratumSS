@@ -1,5 +1,3 @@
-# StratumSS
-
 <div align="center">
 
 <img src="/images/icon.png" alt="StratumSS Logo" width="120">
@@ -22,7 +20,7 @@ The goal is simple: make CSS utilities **easy to read, understand, and remember*
 Instead of shortened utility names, StratumSS uses class names that closely match standard CSS properties.
 
 ```html
-<div class="flex flex-row justify-content-center align-items-center">
+<div class="flex fwrap-wrap content-horizontal-start"> 
     Content
 </div>
 ```
@@ -50,7 +48,7 @@ Features will be added gradually as the framework develops.
 ## Example
 
 ```html
-<div class="flex flex-row justify-content-between align-items-center">
+<div class="flex fwrap-wrap content-horizontal-start">
     <h1>StratumSS</h1>
     <button>Get Started</button>
 </div>
@@ -61,9 +59,9 @@ The class names are intentionally explicit:
 | Class                     | CSS                              |
 | ------------------------- | -------------------------------- |
 | `flex`                    | `display: flex`                  |
-| `flex-row`                | `flex-direction: row`            |
-| `justify-content-between` | `justify-content: space-between` |
-| `align-items-center`      | `align-items: center`            |
+| `fwrap`                   | `flex-wrap: wrap`                |
+| `content-vertical-center` | `align-content: center`          |
+| `trans-none`              | `translate: none`                |
 
 ## Why StratumSS?
 
@@ -115,9 +113,9 @@ The framework can currently be experimented with by including its CSS file in an
 ## Roadmap
 
 * [x] Initial project structure
-* [ ] Flexbox utilities
-* [ ] Alignment utilities
-* [ ] Justification utilities
+* [x] Flexbox utilities
+* [x] Alignment utilities
+* [x] Justification utilities
 * [ ] Spacing utilities
 * [ ] Sizing utilities
 * [ ] Typography utilities
