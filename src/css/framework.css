@@ -1,0 +1,452 @@
+/*
+Everything in here will be distributed across separate files in the future
+
+This file includes all the core change of the StratumSS framework that differs from CSS
+
+This file will also be removed once everything is divided into its respected file
+
+The StratumSS compiler will later determine whether horizontal and vertical
+alignment should use the main axis or cross axis based on flex-direction.
+This means horizontal will always mean left to right and vertical will always
+mean top to bottom, regardless of whether the flex direction is row or column.
+*/
+
+/* CLASSES WITH VALUE: 0 ARE SUBJECT TO BECOME A VARIABLE */
+
+
+/*
+========================================
+DISPLAY
+========================================
+*/
+
+.flex {
+    display: flex;
+}
+
+.flex-inline {
+    display: inline-flex;
+}
+
+
+/*
+========================================
+FLEX DIRECTION
+========================================
+*/
+
+.fdirection-row {
+    flex-direction: row;
+}
+
+.fdirection-rowrev {
+    flex-direction: row-reverse;
+}
+
+.fdirection-col {
+    flex-direction: column;
+}
+
+.fdirection-colrev {
+    flex-direction: column-reverse;
+}
+
+
+/*
+========================================
+FLEX WRAP
+========================================
+*/
+
+.fnowrap {
+    flex-wrap: nowrap;
+}
+
+.fwrap {
+    flex-wrap: wrap;
+}
+
+.fwraprev {
+    flex-wrap: wrap-reverse;
+}
+
+
+/*
+========================================
+JUSTIFICATION
+========================================
+*/
+
+.content-horizontal-start {
+    justify-content: flex-start;
+}
+
+.content-horizontal-end {
+    justify-content: flex-end;
+}
+
+.content-horizontal-center {
+    justify-content: center;
+}
+
+.content-horizontal-between {
+    justify-content: space-between;
+}
+
+.content-horizontal-around {
+    justify-content: space-around;
+}
+
+.content-horizontal-evenly {
+    justify-content: space-evenly;
+}
+
+
+/*
+========================================
+ALIGNMENT
+========================================
+*/
+
+.items-vertical-start {
+    align-items: flex-start;
+}
+
+.items-vertical-end {
+    align-items: flex-end;
+}
+
+.items-vertical-center {
+    align-items: center;
+}
+
+.items-vertical-baseline {
+    align-items: baseline;
+}
+
+.items-vertical-stretch {
+    align-items: stretch;
+}
+
+
+/*
+========================================
+ALIGN SELF
+========================================
+*/
+
+.self-vertical-auto {
+    align-self: auto;
+}
+
+.self-vertical-start {
+    align-self: flex-start;
+}
+
+.self-vertical-end {
+    align-self: flex-end;
+}
+
+.self-vertical-center {
+    align-self: center;
+}
+
+.self-vertical-baseline {
+    align-self: baseline;
+}
+
+.self-vertical-stretch {
+    align-self: stretch;
+}
+
+
+/*
+========================================
+ALIGN CONTENT
+========================================
+*/
+
+.content-vertical-start {
+    align-content: flex-start;
+}
+
+.content-vertical-end {
+    align-content: flex-end;
+}
+
+.content-vertical-center {
+    align-content: center;
+}
+
+.content-vertical-between {
+    align-content: space-between;
+}
+
+.content-vertical-around {
+    align-content: space-around;
+}
+
+.content-vertical-evenly {
+    align-content: space-evenly;
+
+}
+
+.content-vertical-stretch {
+    align-content: stretch;
+}
+
+
+/*
+========================================
+FLEX GROW
+========================================
+*/
+
+.fgrow-0 {
+    flex-grow: 0;
+}
+
+.fgrow-1 {
+    flex-grow: 1;
+}
+
+
+/*
+========================================
+POSITION
+========================================
+*/
+
+.p-static {
+    position: static;
+}
+
+.p-rel {
+    position: relative;
+}
+
+.p-abs {
+    position: absolute;
+}
+
+.p-fix {
+    position: fixed;
+}
+
+.p-sticky {
+    position: sticky;
+}
+
+
+/*
+========================================
+TOP
+========================================
+*/
+
+.top-0 {
+    top: 0;
+}
+
+/* PERCENTAGE */
+
+.top-0-percent {
+    top: 0%;
+}
+
+
+/*
+========================================
+RIGHT
+========================================
+*/
+
+.right-0 {
+    right: 0;
+}
+
+/* PERCENTAGE */
+
+.right-0-percent {
+    right: 0%;
+}
+
+
+/*
+========================================
+BOTTOM
+========================================
+*/
+
+.bottom-0 {
+    bottom: 0;
+}
+
+/* PERCENTAGE */
+
+.bottom-0-percent {
+    bottom: 0%;
+}
+
+
+/*
+========================================
+LEFT
+========================================
+*/
+
+.left-0 {
+    left: 0;
+}
+
+/* PERCENTAGE */
+
+.left-0-percent {
+    left: 0%;
+}
+
+
+/*
+========================================
+INSET
+========================================
+*/
+
+.inset-0 {
+    inset: 0;
+}
+
+/* PERCENTAGE */
+
+.inset-0-percent {
+    inset: 0%;
+}
+
+
+/*
+========================================
+Z-INDEX
+========================================
+*/
+
+.zindex-0 {
+    z-index: 0;
+}
+
+.zindex-1 {
+    z-index: 1;
+}
+
+
+/*
+========================================
+MARGIN
+========================================
+*/
+
+.marg-0 {
+    margin: 0;
+}
+
+/* PERCENTAGE */
+
+.marg-0-percent {
+    margin: 0%;
+}
+
+.marg-top-0 {
+    margin-top: 0;
+}
+
+.marg-right-0 {
+    margin-right: 0;
+}
+
+.marg-bottom-0 {
+    margin-bottom: 0;
+}
+
+.marg-left-0 {
+    margin-left: 0;
+}
+
+.marg-in-0 {
+    margin-inline: 0;
+}
+
+.marg-instart-0 {
+    margin-inline-start: 0;
+}
+
+.marg-inend-0 {
+    margin-inline-end: 0;
+}
+
+.marg-block-0 {
+    margin-block: 0;
+}
+
+.marg-block-start-0 {
+    margin-block-start: 0;
+}
+
+.marg-block-end-0 {
+    margin-block-end: 0;
+}
+
+
+/*
+========================================
+PADDING
+========================================
+*/
+
+.pad-0 {
+    padding: 0;
+}
+
+/* PERCENTAGE */
+
+.pad-0-percent {
+    padding: 0%;
+}
+
+.pad-top-0 {
+    padding-top: 0;
+}
+
+.pad-right-0 {
+    padding-right: 0;
+}
+
+.pad-bottom-0 {
+    padding-bottom: 0;
+}
+
+.pad-left-0 {
+    padding-left: 0;
+}
+
+.pad-in-0 {
+    padding-inline: 0;
+}
+
+.pad-in-start-0 {
+    padding-inline-start: 0;
+}
+
+.pad-in-end-0 {
+    padding-inline-end: 0;
+}
+
+.pad-block-0 {
+    padding-block: 0;
+}
+
+.pad-block-start-0 {
+    padding-block-start: 0;
+}
+
+.pad-block-end-0 {
+    padding-block-end: 0;
+}

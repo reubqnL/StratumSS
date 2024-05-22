@@ -107,7 +107,8 @@ cd StratumSS
 The framework can currently be experimented with by including its CSS file in an HTML document:
 
 ```html
-<link rel="stylesheet" href="css/framework.css">
+
+<link rel="stylesheet" href="src/css/framework.css">
 ```
 
 ## Roadmap

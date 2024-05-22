@@ -1,0 +1,514 @@
+# StratumSS CSS Comments & Conventions
+
+This document explains the comments and conventions used throughout the StratumSS CSS source files.
+
+The comments are not CSS functionality. They exist to explain how the framework is structured, what certain classes mean, and how the compiler will eventually handle parts of the system automatically.
+
+---
+
+## Core File Comment
+
+The main StratumSS CSS file begins with a comment explaining that the file is temporary.
+
+The current CSS is being kept together while the framework is being developed.
+
+Eventually, the framework will be divided into separate files.
+
+For example:
+
+```text
+src/
+├── css/
+│   ├── flexbox.css
+│   ├── positioning.css
+│   ├── spacing.css
+│   ├── sizing.css
+│   ├── typography.css
+│   └── ...
+````
+
+The compiler can then combine the required pieces when generating the final stylesheet.
+
+The large combined file is therefore a development convenience rather than the final architecture.
+
+---
+
+## "Core change of the StratumSS framework"
+
+The original comment describes the CSS that makes StratumSS different from normal CSS.
+
+StratumSS is not creating new CSS properties.
+
+Instead, it creates a different way of using existing CSS properties.
+
+For example:
+
+```css
+.flex {
+    display: flex;
+}
+```
+
+The CSS property is still:
+
+```css
+display: flex;
+```
+
+StratumSS simply gives it a framework class:
+
+```html
+<div class="flex">
+```
+
+This means the framework is built on top of standard CSS rather than replacing CSS itself.
+
+---
+
+## Horizontal and Vertical Alignment
+
+One of the important StratumSS ideas is that users should be able to think visually.
+
+For example:
+
+```text
+horizontal = left ↔ right
+
+vertical = top ↕ bottom
+```
+
+The user should not have to think about whether Flexbox calls something the "main axis" or "cross axis".
+
+For a normal row:
+
+```css
+flex-direction: row;
+```
+
+the axes are:
+
+```text
+horizontal → main axis
+vertical   → cross axis
+```
+
+For a column:
+
+```css
+flex-direction: column;
+```
+
+the axes become:
+
+```text
+vertical   → main axis
+horizontal → cross axis
+```
+
+StratumSS wants to hide that complexity from the user.
+
+For example:
+
+```html
+<div class="flex fdirection-row content-horizontal-center">
+```
+
+should mean:
+
+```text
+Put the content in the horizontal center.
+```
+
+The user should not need to remember:
+
+```css
+justify-content: center;
+```
+
+Later, the StratumSS compiler can determine which CSS property needs to be generated based on the flex direction.
+
+---
+
+## Compiler-Based Axis Translation
+
+This is one of the reasons StratumSS will eventually need a compiler.
+
+A class such as:
+
+```text
+content-horizontal-center
+```
+
+does not necessarily have to permanently map to one CSS property.
+
+The compiler could inspect:
+
+```text
+fdirection-row
+```
+
+and determine:
+
+```text
+horizontal = main axis
+```
+
+which produces:
+
+```css
+justify-content: center;
+```
+
+If the element instead uses:
+
+```text
+fdirection-col
+```
+
+then:
+
+```text
+horizontal = cross axis
+```
+
+and the compiler could generate:
+
+```css
+align-items: center;
+```
+
+This allows StratumSS classes to describe what the developer wants visually rather than forcing the developer to understand the internal Flexbox axis model.
+
+---
+
+# Zero Values
+
+The comment:
+
+```text
+CLASSES WITH VALUE: 0 ARE SUBJECT TO BECOME A VARIABLE
+```
+
+means that zero values are expected to be reviewed when the framework's variable/token system is created.
+
+For example:
+
+```css
+.marg-0 {
+    margin: 0;
+}
+```
+
+Currently this is simply a normal utility.
+
+Later, StratumSS may have a central value system such as:
+
+```text
+0
+1
+2
+4
+8
+16
+...
+```
+
+or CSS variables.
+
+The exact variable system has not been finalized.
+
+The comment therefore marks zero-value utilities as something that may change during the framework's architecture development.
+
+---
+
+# Percentage Comments
+
+Some utilities may have both normal numeric values and percentage values.
+
+For example:
+
+```css
+.top-0 {
+    top: 0;
+}
+```
+
+and:
+
+```css
+.top-0-percent {
+    top: 0%;
+}
+```
+
+The:
+
+```text
+/* PERCENTAGE */
+```
+
+comment identifies the percentage version.
+
+The distinction is useful because StratumSS may eventually allow the compiler to generate arbitrary values automatically.
+
+For example:
+
+```text
+top-50%
+```
+
+could eventually generate:
+
+```css
+.top-50\% {
+    top: 50%;
+}
+```
+
+The exact syntax for arbitrary values is still subject to the compiler design.
+
+---
+
+# Static Utilities
+
+A static utility is a class that is explicitly defined in the framework.
+
+Example:
+
+```css
+.flex {
+    display: flex;
+}
+```
+
+The framework knows about this class before compilation.
+
+Another example:
+
+```css
+.p-rel {
+    position: relative;
+}
+```
+
+Static utilities are useful for common values that developers use frequently.
+
+---
+
+# Dynamic Utilities
+
+Dynamic utilities are classes whose values can be generated by the compiler.
+
+For example:
+
+```text
+flex-grow-22
+```
+
+could become:
+
+```css
+.flex-grow-22 {
+    flex-grow: 22;
+}
+```
+
+There would be no need to manually write:
+
+```css
+.fgrow-0
+.fgrow-1
+.fgrow-2
+.fgrow-3
+...
+.fgrow-22
+...
+.fgrow-100
+```
+
+Instead, the compiler recognizes the pattern.
+
+Conceptually:
+
+```text
+flex-grow-{number}
+```
+
+becomes:
+
+```text
+flex-grow-22
+        ↓
+extract 22
+        ↓
+flex-grow: 22;
+```
+
+This is one of the major differences between the initial static CSS and the future StratumSS compiler.
+
+---
+
+# Why Both Static and Dynamic Utilities Exist
+
+Not every utility needs to be generated dynamically.
+
+For example:
+
+```css
+.flex {
+    display: flex;
+}
+```
+
+is always the same.
+
+There is no reason for the compiler to calculate anything.
+
+However:
+
+```text
+width-437px
+```
+
+contains a value that cannot realistically be manually defined for every possible number.
+
+The compiler can therefore handle it dynamically.
+
+The framework can contain both:
+
+```text
+Static utilities
+        +
+Dynamic utilities
+        =
+StratumSS
+```
+
+---
+
+# Comments Are Not Part of the Public API
+
+Comments such as:
+
+```css
+/* PERCENTAGE */
+```
+
+do not affect how a website behaves.
+
+They are developer documentation.
+
+The eventual production build may also remove comments from generated CSS when minification is enabled.
+
+The important part is the actual utility class and generated CSS.
+
+---
+
+# Naming Philosophy
+
+StratumSS uses names that are intended to be understandable without memorizing a large collection of arbitrary abbreviations.
+
+Examples:
+
+```text
+.flex
+.p-rel
+.marg-top-0
+.pad-left-0
+.fdirection-row
+.fwrap
+.fgrow-1
+```
+
+Some names are intentionally abbreviated.
+
+This is part of the current StratumSS naming system and should not be changed automatically.
+
+The goal is consistency rather than making every class name identical to the underlying CSS property.
+
+---
+
+# CSS Property vs StratumSS Utility
+
+A StratumSS utility is not necessarily the same thing as a CSS property.
+
+For example:
+
+```text
+StratumSS:
+
+content-horizontal-center
+```
+
+may represent:
+
+```css
+justify-content: center;
+```
+
+or potentially:
+
+```css
+align-items: center;
+```
+
+depending on the element's flex direction and the future compiler rules.
+
+This is intentional.
+
+StratumSS describes the developer's intended layout rather than exposing every internal CSS implementation detail.
+
+---
+
+# Future Architecture
+
+The long-term architecture is expected to look roughly like this:
+
+```text
+Source HTML / JSX / TSX
+        │
+        ▼
+StratumSS Scanner
+        │
+        ▼
+Find StratumSS classes
+        │
+        ├── Static class
+        │
+        └── Dynamic class
+                │
+                ▼
+          Value extraction
+                │
+                ▼
+          CSS generation
+                │
+                ▼
+        Generated CSS
+                │
+                ▼
+             dist/
+```
+
+The final generated stylesheet should contain only the utilities that are actually used by the project.
+
+---
+
+# Important Principle
+
+StratumSS should not attempt to replace CSS.
+
+It should make CSS easier to use.
+
+The framework should therefore:
+
+1. Use standard CSS properties.
+2. Provide readable utility classes.
+3. Support dynamic values through the compiler.
+4. Avoid unnecessary duplicate utilities.
+5. Keep the naming system consistent.
+6. Generate only the CSS that is actually required.
+7. Keep the source architecture maintainable.
+8. Allow developers to fall back to normal CSS whenever necessary.
+
+The compiler is what allows StratumSS to grow without requiring a manually written class for every possible CSS value.
