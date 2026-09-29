@@ -93,3 +93,30 @@ test('arbitrary-value utilities still refuse structural characters', () => {
     assert.throws(() => parseClass('transform-translateX(4px)}'));
     assert.throws(() => parseClass('box-shadow-0;color:red'));
 });
+
+test('underscores inside a function become spaces, not value separators', () => {
+    assert.equal(validateValue('length', 'calc(100%_-_2rem)').value, 'calc(100% - 2rem)');
+    assert.equal(parseClass('width-calc(100%_-_var(--x))').value, 'calc(100% - var(--x))');
+    assert.equal(validateValue('length', 'min(1px_var(--x))').value, 'min(1px var(--x))');
+    assert.equal(parseClass('padding-calc(1rem_+_2px)').value, 'calc(1rem + 2px)');
+});
+
+test('a math operator without its required spaces is rejected, with the fix', () => {
+    assert.throws(
+        () => parseClass('width-calc(100%-2rem)'),
+        /in calc\(\) the "-" operator needs a space on both sides — write it as "calc\(100%_-_2rem\)"/
+    );
+    assert.throws(() => parseClass('padding-calc(1rem+2px)'), /"\+" operator/);
+});
+
+test('unary signs and identifier contexts keep their spelling', () => {
+    for (const name of [
+        'width-calc(-4px)',
+        'width-calc(100%_*_-2px)',
+        'width-var(--my_color)',
+        'height-env(safe-area-inset-bottom)',
+        'margin-calc(50%_-_var(--x)_/_2)'
+    ]) {
+        assert.doesNotThrow(() => parseClass(name), name);
+    }
+});

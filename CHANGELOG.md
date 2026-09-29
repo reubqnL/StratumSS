@@ -30,7 +30,13 @@ warning.
 - **Unknown flags in the CLI were ignored** and their value was consumed as the
   source path (`stratumss build --outpu src` built the wrong directory and exited
   `0`). Unknown options are now errors.
-- **`npm test` passed vacuously** with zero test files. The suite now contains 70
+- **Math functions could not be written at all, and a broken one was accepted.**
+  A `_` was always the multi-value separator, so `width-calc(100%_-_2rem)` was
+  rejected, while `width-calc(100%-2rem)` passed validation and emitted
+  `width: calc(100%-2rem)` — CSS every browser discards, since `+` and `-` must be
+  space-separated. An underscore inside a function is now a space, `var()`/`url()`
+  names keep their underscores, and an unspaced operator is an error naming the fix.
+- **`npm test` passed vacuously** with zero test files. The suite now contains 73
   tests, including an end-to-end CLI run and watch-mode coverage.
 
 ### Added

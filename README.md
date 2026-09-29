@@ -11,8 +11,8 @@ and writes a stylesheet containing only the utilities you actually used.
 
 [![npm version](https://img.shields.io/npm/v/stratumss?color=2563eb)](https://www.npmjs.com/package/stratumss)
 [![license](https://img.shields.io/badge/license-MIT-blue)](https://github.com/reubqnL/StratumSS/blob/main/LICENSE)
-[![node](https://img.shields.io/badge/node-%3E%3D20-339933)](https://github.com/reubqnL/StratumSS/blob/main/package.json#L36-L38)
-[![tests](https://img.shields.io/badge/tests-70%20passing-16a34a)](https://github.com/reubqnL/StratumSS/tree/main/test)
+[![node](https://img.shields.io/badge/node-%3E%3D20-339933)](https://github.com/reubqnL/StratumSS/blob/main/package.json)
+[![tests](https://img.shields.io/badge/tests-73%20passing-16a34a)](https://github.com/reubqnL/StratumSS/tree/main/test)
 
 </div>
 
@@ -35,8 +35,9 @@ StratumSS keeps it spelled out:
 
 Two things separate it from hand-written CSS:
 
-- **Values are validated.** `padding-4p` or `vertical-align-midle` fail the build
-  with a suggestion instead of quietly shipping a broken declaration.
+- **Values are validated.** `padding-4p`, `vertical-align-midle` and a `calc()` the
+  browser would drop all fail the build with a suggestion instead of quietly
+  shipping a broken declaration.
 - **Only what you use is emitted.** One class in your markup, one rule in the file.
 
 ## Install
@@ -131,7 +132,7 @@ stratumss --version
 | `-s, --source <path>` | Directory or file to scan (repeatable, defaults to `.`) |
 | `-o, --output <file>` | Stylesheet to write (default `./dist/stratum.css`) |
 | `--exclude <names>` | Extra directory names to skip, comma separated |
-| `--extensions <list>` | File extensions to scan, comma separated |
+| `--extensions <list>` | File extensions to scan, comma separated (default: html, php, vue, svelte, astro, jsx/tsx, md, and other markup) |
 | `--minify` | Emit compact CSS |
 | `--no-header` | Omit the banner comment |
 | `-w, --watch` | Rebuild whenever a scanned file changes |
@@ -180,10 +181,23 @@ the compiler accepts.
 | `utility-a_b` | Multiple values, joined by a space | `padding-10px_24px` |
 | `utility-neg-value` | Negative value, where CSS allows one | `margin-left-neg-4px` |
 | `class!` | Marks the declaration `!important` | `color-black!` |
-| `var(--x)`, `calc(…)` | Passed through untouched | `width-var(--w)` |
+| `var(--x)`, `calc(…)` | Functions are passed through untouched | `width-var(--w)` |
+| `_` inside `( … )` | Also a space, so math can be spelled | `width-calc(100%_-_2rem)` |
 
 Values accept the units you expect: `px`, `rem`, `em`, `%`, `vh`, `vw`, `ch`, `fr`,
 and so on, plus keywords such as `auto`, `min-content` and `100dvh`.
+
+CSS requires the `+` and `-` inside `calc()`, `min()`, `max()` and `clamp()` to be
+space-separated, and a class name has no spaces — so `_` carries them there, and the
+value is written out with real spaces. Underscores inside a *function* are never
+mistaken for the multi-value separator, and those in a custom-property name are left
+alone: `width-min(1px_var(--x))_max-content` is two values, `width-var(--my_color)`
+is one. An operator written without its spaces is rejected rather than emitted as a
+declaration the browser discards:
+
+```text
+error: src/layout.html:12: Invalid value in class "width-calc(100%-2rem)": in calc() the "-" operator needs a space on both sides — write it as "calc(100%_-_2rem)"
+```
 
 ### Renamed classes
 

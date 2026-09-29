@@ -74,6 +74,95 @@ const UNSAFE_VALUE_RE = /[{};\\]|(\/\*)|(\*\/)|[\u0000-\u001F\u007F]/;
 const CSS_WIDE_KEYWORDS = new Set(['inherit', 'initial', 'unset', 'revert', 'revert-layer']);
 
 /**
+ * Functions whose parentheses hold names rather than CSS values. Inside them an
+ * underscore is part of the name (`--my_color`), so it must not become a space.
+ */
+const IDENTIFIER_FUNCTIONS = new Set(['var', 'env', 'attr', 'url', 'counter', 'counters']);
+
+/** Math functions, where `+` and `-` are only operators when space-separated. */
+const MATH_FUNCTION_RE = /^(calc|min|max|clamp|mod|rem|round)\(/i;
+
+/** Trailing run of characters that could make up the operand before an operator. */
+const PRECEDING_TOKEN_RE = /[A-Za-z0-9.]+$/;
+
+/** A number, optionally followed by a unit or `%`, i.e. something an operator can follow. */
+const NUMBER_WITH_UNIT_RE = /^-?(?:\d+\.?\d*|\.\d+)[a-z%]*$/i;
+
+/**
+ * Splits a raw class value on the `_` separators that are *not* inside a pair of
+ * parentheses, and turns the underscores that are inside one into spaces. That is
+ * what makes `width-calc(100%_-_2rem)` mean `calc(100% - 2rem)` while
+ * `width-min(1px_var(--x))_max-content` still reads as two values, and while a
+ * custom-property name keeps its underscores.
+ */
+function splitSegments(rawValue: string): string[] {
+    const segments: string[] = [];
+    const functions: string[] = [];
+    let current = '';
+
+    for (let index = 0; index < rawValue.length; index += 1) {
+        const char = rawValue[index] as string;
+
+        if (char === '(') {
+            const name = /[A-Za-z][A-Za-z0-9-]*$/.exec(rawValue.slice(0, index))?.[0].toLowerCase() ?? '';
+            functions.push(name);
+            current += char;
+            continue;
+        }
+        if (char === ')') {
+            functions.pop();
+            current += char;
+            continue;
+        }
+        if (char === '_') {
+            if (functions.length === 0) {
+                segments.push(current);
+                current = '';
+                continue;
+            }
+            const owner = functions[functions.length - 1] as string;
+            current += IDENTIFIER_FUNCTIONS.has(owner) ? char : ' ';
+            continue;
+        }
+        current += char;
+    }
+
+    segments.push(current);
+    return segments;
+}
+
+/**
+ * Finds a `+` or `-` that the browser will read as an operator but that is not
+ * space-separated, as in `calc(100%-2rem)`. CSS makes those a parse error, so the
+ * declaration would be thrown away silently — exactly what validation is for.
+ */
+export function findUnspacedMathOperator(value: string): { operator: string, index: number } | null {
+    if (!MATH_FUNCTION_RE.test(value)) return null;
+
+    for (let index = 1; index < value.length - 1; index += 1) {
+        const char = value[index] as string;
+        if (char !== '+' && char !== '-') continue;
+
+        const before = value[index - 1] as string;
+        const after = value[index + 1] as string;
+        if (before === ' ') continue;
+
+        // A parenthesis, comma or operator before it means this sign is unary,
+        // as in `calc(-4px)` or `calc(100% * -2rem)`, and needs no space.
+        let endsAnOperand = before === ')' || before === '%';
+        if (!endsAnOperand) {
+            const token = PRECEDING_TOKEN_RE.exec(value.slice(0, index))?.[0];
+            endsAnOperand = token !== undefined && NUMBER_WITH_UNIT_RE.test(token);
+        }
+        if (endsAnOperand && after !== ' ') {
+            return { operator: char, index };
+        }
+    }
+
+    return null;
+}
+
+/**
  * The CSS named colours, including the `transparent`/`currentcolor` keywords.
  * Kept as a Set so lookups are O(1) and the error message can stay short.
  */
@@ -201,7 +290,7 @@ export function validateValue(
 ): ValidatedValue {
     assertSafeValue(rawValue);
 
-    const segments = rawValue.split('_');
+    const segments = splitSegments(rawValue);
 
     for (const segment of segments) {
         if (!validateSegment(kind, segment, allowed)) {
@@ -209,6 +298,18 @@ export function validateValue(
                 kind,
                 segment,
                 `"${segment}" is not a valid ${kind} value — expected ${describeExpectation(kind, allowed)}`
+            );
+        }
+
+        const unspaced = findUnspacedMathOperator(segment);
+        if (unspaced !== null) {
+            const name = MATH_FUNCTION_RE.exec(segment)?.[1] ?? 'calc';
+            const { operator, index } = unspaced;
+            const fix = `${segment.slice(0, index)}_${operator}_${segment.slice(index + 1)}`;
+            throw new ValueSyntaxError(
+                kind,
+                segment,
+                `in ${name}() the "${operator}" operator needs a space on both sides — write it as "${fix}"`
             );
         }
     }
