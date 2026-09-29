@@ -1,7 +1,9 @@
 // npx tsc
 // node dist/compiler/scanner.js
 
-import fs from 'fs'; // File System - node module
+import fs from 'fs';
+import { parseClasses } from './parser.js';
+import { generateCSS } from './generator.js';
 
 // The concept of the RegEx scanner is to make the process simpler rather than using a massive while loop
 // The RegEx patterns scan the file for: class = "" class= "" class ="" and the same with single quotes
@@ -38,4 +40,6 @@ for (const file of files) {
 
 const uniqueClasses = [...new Set(allClasses)];
 
-console.log(uniqueClasses);
+const parsedClasses = parseClasses(uniqueClasses);
+
+console.log(parsedClasses);
