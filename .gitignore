@@ -1,7 +1,17 @@
-.idea/
-
-.DS_Store
-
-dist/
-
+# Dependencies
 node_modules/
+
+# Build output and generated stylesheets
+dist/
+examples/stratum.css
+
+# Test and tooling output
+coverage/
+.nyc_output/
+*.tgz
+
+# Editors and OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
