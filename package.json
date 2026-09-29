@@ -32,6 +32,7 @@
     "dev": "tsc --watch",
     "test": "npm run build && node --test \"test/**/*.test.js\"",
     "docs": "npm run build && node scripts/generate-docs.mjs",
+    "cdn": "npm run build && node scripts/build-cdn.mjs",
     "example": "npm run build && node dist/compiler/cli.js build examples --output examples/stratum.css",
     "demo": "npm run example && node scripts/serve.mjs",
     "prepare": "npm run build",

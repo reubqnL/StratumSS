@@ -60,6 +60,14 @@ warning.
   `generateCSS`, `validateValue`, `listUtilityClasses`).
 - Generated reference documentation (`docs/utilities.md`), a demo page and a
   dependency-free preview server (`npm run demo`).
+- `cdn/stratum.css` and `cdn/stratum.min.css`: every value-free utility in the
+  catalogue — 365 rules, 20 kB, 3.3 kB gzipped — so a page can use the framework with
+  one `<link>` and no Node. `npm run cdn` regenerates them from the utility table and
+  `test/cdn.test.js` fails if the committed copy drifts or if the new demo
+  (`examples/cdn.html`) ever uses a class the file cannot contain.
+- Documented installation straight from the repository
+  (`npm i -D github:reubqnL/StratumSS#v1.1.0`), which needs no registry listing:
+  `prepare` builds `dist/` on install, so the CLI works from a Git dependency.
 
 ### Changed
 

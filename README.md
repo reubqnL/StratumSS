@@ -12,7 +12,7 @@ and writes a stylesheet containing only the utilities you actually used.
 [![npm version](https://img.shields.io/npm/v/stratumss?color=2563eb)](https://www.npmjs.com/package/stratumss)
 [![license](https://img.shields.io/badge/license-MIT-blue)](https://github.com/reubqnL/StratumSS/blob/main/LICENSE)
 [![node](https://img.shields.io/badge/node-%3E%3D20-339933)](https://github.com/reubqnL/StratumSS/blob/main/package.json)
-[![tests](https://img.shields.io/badge/tests-78%20passing-16a34a)](https://github.com/reubqnL/StratumSS/tree/main/test)
+[![tests](https://img.shields.io/badge/tests-81%20passing-16a34a)](https://github.com/reubqnL/StratumSS/tree/main/test)
 
 </div>
 
@@ -117,6 +117,43 @@ The generated file (8 utilities from 1 file, 404 B):
 
 Characters that are not valid in a CSS selector (`#`, `.`, `%`, a leading digit)
 are escaped automatically; the class name in your markup is unchanged.
+
+## Try it without a build step
+
+`cdn/stratum.css` is every utility that carries no value — 365 rules, 20 kB,
+3.3 kB gzipped — regenerated from the same table the compiler uses
+(`npm run cdn`, and `npm test` fails if the committed copy drifts). It needs no Node:
+
+```html
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/reubqnL/StratumSS@v1.1.0/cdn/stratum.css">
+```
+
+jsDelivr serves any file from a public GitHub repository. Pin a tag or a commit rather
+than a branch: jsDelivr caches tagged files for a year and branches for 12 hours, so
+`@main` serves whoever happened to request it first that day. `examples/cdn.html` is a
+page built entirely from those 365 classes — run `npm run demo` and open
+`/examples/cdn.html` to see the vocabulary with nothing else loaded.
+
+What is deliberately absent is anything whose name contains a value: `padding-16px`,
+`color-#0f172a`, `gap-24px`. There is no fixed set of them to publish until the project
+picks a scale, so a linked stylesheet cannot carry them. Spacing, colour and type
+therefore need the compiler below.
+
+## Install it from Git instead of npm
+
+npm can install a package straight from a repository, which needs no registry entry at
+all — `prepare` runs `tsc` on install, so `dist/` and the `stratumss` command arrive
+ready to use:
+
+```bash
+npm install --save-dev github:reubqnL/StratumSS#v1.1.0
+npx stratumss build src --output public/stratum.css
+```
+
+The `#ref` accepts a tag, a branch or a commit; a tag or commit is immutable, so
+reinstalling a build later gives you the same bytes. The trade is that installs need
+`git` and the devDependencies, and you lose the registry's integrity metadata and
+semver range resolution.
 
 ## CLI
 
@@ -249,14 +286,17 @@ npm install
 npm run build      # compile TypeScript to dist/
 npm test           # build, then run the test suite
 npm run docs       # regenerate docs/utilities.md from the utility table
+npm run cdn        # regenerate cdn/stratum.css from the utility table
 npm run example    # compile examples/index.html to examples/stratum.css
 npm run demo       # compile the example and serve it at http://localhost:4173
 ```
 
 The test suite covers the parser, value validation, the generator's escaping and
-ordering, the scanner's ignore rules, and the CLI end to end (including watch mode).
-Every utility in the catalogue is exercised: each declared class and alias resolves,
-each enum value round-trips, and no accepted value can break out of its declaration.
+ordering, the scanner's ignore rules, the CLI end to end (including watch mode), the
+generated reference and stylesheet, and the package manifest npm rewrites while
+packing. Every utility in the catalogue is exercised: each declared class and alias
+resolves, each enum value round-trips, and no accepted value can break out of its
+declaration.
 
 ## Project layout
 
@@ -273,7 +313,12 @@ src/
     generator.ts         selector escaping and CSS rendering
     suggest.ts           "did you mean" ranking
 docs/utilities.md        generated class reference
+cdn/stratum.css          generated value-free stylesheet, for linking
 examples/index.html      demo page (run `npm run demo`)
+examples/cdn.html        the same page using only cdn/stratum.css
+scripts/generate-docs.mjs
+scripts/build-cdn.mjs    regenerates cdn/ from the utility table
+scripts/serve.mjs        dependency-free preview server
 test/                    test suite
 ```
 

@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>StratumSS without a build step</title>
+<!--
+  This page links cdn/stratum.css directly: no Node, no compiler, one <link>.
+
+  It therefore only uses the utilities that carry no value, and it deliberately has no
+  spacing, colours or font sizes, because `padding-16px` and `color-#0f172a` can only
+  exist in a stylesheet the compiler wrote for this project. That is the trade:
+  value-free classes link, value-bearing classes build.
+-->
+<link rel="stylesheet" href="../cdn/stratum.css">
+</head>
+<body class="display-flex flex-direction-column">
+
+<header class="display-flex flex-wrap-wrap items-vertical-center justify-content-space-between position-sticky">
+  <strong class="text-transform-uppercase font-weight-bold">StratumSS</strong>
+  <nav class="display-flex flex-wrap-wrap">
+    <a class="text-decoration-none user-select-none" href="#layout">Layout</a>
+    <a class="text-decoration-none" href="#type">Type</a>
+    <a class="text-decoration-none" href="#edges">Edges</a>
+  </nav>
+</header>
+
+<main class="display-grid">
+
+  <section id="layout">
+    <h2>Layout</h2>
+    <p>Every box below is <code>display-flex</code> with a different <code>justify-content-*</code> and <code>items-vertical-*</code> pair.</p>
+    <div class="display-flex flex-wrap-wrap justify-content-flex-start items-vertical-stretch border-style-solid">
+      <span class="display-inline-block">flex-start + stretch</span>
+      <span class="display-inline-block">no values, no gaps</span>
+    </div>
+    <div class="display-flex justify-content-center items-vertical-center border-style-solid">
+      <span>center + center</span>
+    </div>
+    <div class="display-flex justify-content-space-between items-vertical-baseline border-style-solid">
+      <span>space-between</span>
+      <span>baseline</span>
+    </div>
+    <div class="display-flex flex-direction-column justify-content-flex-end border-style-solid">
+      <span>column</span>
+      <span>flex-end</span>
+    </div>
+  </section>
+
+  <section id="type">
+    <h2>Type</h2>
+    <p class="text-align-center text-transform-uppercase font-weight-900">uppercase · weight 900 · centered</p>
+    <p class="text-align-center font-weight-100 text-transform-lowercase">LOWERCASE · WEIGHT 100</p>
+    <p class="text-align-center font-style-italic">italic via <code>font-style-italic</code></p>
+    <p class="text-align-center text-decoration-line-through">struck through</p>
+    <p class="text-align-center white-space-nowrap overflow-hidden text-overflow-ellipsis border-style-solid">
+      This paragraph is nowrap with overflow hidden and text-overflow-ellipsis, so a long line of text is cut off with an ellipsis instead of wrapping.
+    </p>
+    <ul class="list-style-position-inside">
+      <li>list-style-position-inside</li>
+      <li>no marker spacing utility without values</li>
+    </ul>
+  </section>
+
+  <section id="edges">
+    <h2>Edges, clipping, interaction</h2>
+    <div class="display-flex flex-wrap-wrap">
+      <code class="border-style-dashed">dashed</code>
+      <code class="border-style-dotted">dotted</code>
+      <code class="border-style-double">double</code>
+      <code class="border-style-groove">groove</code>
+      <code class="border-style-inset">inset</code>
+      <code class="outline-style-auto">outline auto</code>
+    </div>
+    <div class="overflow-auto border-style-solid scroll-behavior-smooth">
+      <p class="white-space-pre">overflow-auto with white-space-pre: this block scrolls sideways because the text will not wrap.</p>
+    </div>
+    <p><span class="user-select-none pointer-events-none visibility-hidden">select me — you cannot: user-select-none, pointer-events-none, visibility-hidden</span>that sentence was hidden.</p>
+    <p class="float-right clear-both">float-right then clear-both</p>
+  </section>
+
+</main>
+
+<footer class="display-flex justify-content-center text-align-center">
+  <small>365 value-free utilities, 20 kB, 3.3 kB gzipped. Run <code>npx stratumss build . --output stratum.css</code> for the rest.</small>
+</footer>
+
+</body>
+</html>

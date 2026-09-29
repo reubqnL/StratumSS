@@ -237,6 +237,12 @@ instead of silently producing a broken stylesheet.
 | `-neg-<value>` | A negative value, where CSS allows one | `margin-left-neg-4px` |
 | `<class>!` | Marks the declaration `!important` | `color-black!` |
 | `var(--x)`, `calc(…)` | Passed through untouched | `width-var(--w)` |
+| `_` inside `( … )` | Also a space, so math can be spelled | `width-calc(100%_-_2rem)` |
+
+CSS needs the `+` and `-` in `calc()`, `min()`, `max()` and `clamp()` to be
+space-separated, and a class name cannot contain a space, so `_` carries them and
+the value is written out with real spaces. An operator without its spaces is a
+build error rather than a declaration the browser throws away.
 
 ## Groups
 
