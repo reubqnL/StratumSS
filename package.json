@@ -5,7 +5,7 @@
   "license": "MIT",
   "type": "module",
   "bin": {
-    "stratumss": "./dist/compiler/cli.js"
+    "stratumss": "dist/compiler/cli.js"
   },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

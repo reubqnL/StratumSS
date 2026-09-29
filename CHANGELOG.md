@@ -36,8 +36,14 @@ warning.
   `width: calc(100%-2rem)` — CSS every browser discards, since `+` and `-` must be
   space-separated. An underscore inside a function is now a space, `var()`/`url()`
   names keep their underscores, and an unspaced operator is an error naming the fix.
-- **`npm test` passed vacuously** with zero test files. The suite now contains 73
+- **`npm test` passed vacuously** with zero test files. The suite now contains 78
   tests, including an end-to-end CLI run and watch-mode coverage.
+- **The published package would have had no `stratumss` command.** `bin` pointed at
+  `./dist/compiler/cli.js`, and npm rejects a `./`-prefixed bin path: it prints a
+  warning, removes the field from the manifest, and publishes anyway. The path is now
+  `dist/compiler/cli.js`, and `test/package.test.js` guards the manifest so a dropped
+  `bin`, a stale `dist/` in the tarball, or an `exports` entry pointing at a missing
+  file fails the suite instead of the release.
 
 ### Added
 
