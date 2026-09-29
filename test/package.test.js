@@ -53,3 +53,18 @@ test('publish rebuilds from an empty dist and runs the suite first', () => {
     assert.equal(pkg.scripts.prepublishOnly, 'npm test');
     assert.equal(pkg.scripts.prepare, 'npm run build');
 });
+
+test('the package has no runtime dependencies and never lists itself', () => {
+    // `npm i -D github:reubqnL/StratumSS` run inside this repo adds stratumss to its
+    // own manifest, which would publish a package that depends on itself.
+    assert.deepEqual(pkg.dependencies ?? {}, {}, 'the framework ships no runtime deps');
+
+    const declared = {
+        ...(pkg.devDependencies ?? {}),
+        ...(pkg.peerDependencies ?? {}),
+        ...(pkg.optionalDependencies ?? {})
+    };
+    assert.ok(!Object.keys(declared).includes(pkg.name),
+        `${pkg.name} must not appear in its own dependency lists - undo the self-install`);
+});
+
