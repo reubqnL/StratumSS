@@ -1,45 +1,49 @@
-// npx tsc
-// node dist/compiler/scanner.js
-
 import fs from 'fs';
+import path from 'path';
+
 import { parseClasses } from './parser.js';
 import { generateCSS } from './generator.js';
 
-// The concept of the RegEx scanner is to make the process simpler rather than using a massive while loop
-// The RegEx patterns scan the file for: class = "" class= "" class ="" and the same with single quotes
+const SUPPORTED_EXTENSIONS = new Set(['.html', '.php', '.css']);
 
-function scanFile(filePath: string) {
-    const html = fs.readFileSync(filePath, 'utf-8');
-
-    const matches = html.matchAll(classRegex);
+function scanFile(filePath: string): string[] {
+    const source = fs.readFileSync(filePath, 'utf-8');
+    const classRegex = /\bclass\s*=\s*['"](.*?)['"]/gs;
     const classes: string[] = [];
 
-    for (const match of matches) {
-        classes.push(...match[1].split(/\s+/));
+    for (const match of source.matchAll(classRegex)) {
+        const classAttribute = match[1].trim();
+        if (classAttribute === '') continue;
+        classes.push(...classAttribute.split(/\s+/));
     }
 
     return classes;
 }
 
-const classRegex = /\bclass\s*=\s*['"](.*?)['"]/g;
+function scanDirectory(directory: string): string[] {
+    const classes: string[] = [];
+    const entries = fs.readdirSync(directory, { withFileTypes: true });
 
-const files = fs.readdirSync('examples');
+    for (const entry of entries) {
+        const entryPath = path.join(directory, entry.name);
+        if (entry.isDirectory()) {
+            classes.push(...scanDirectory(entryPath));
+            continue;
+        }
+        if (!entry.isFile()) continue;
 
-const allClasses: string[] = [];
-
-for (const file of files) {
-    if (!file.endsWith('.html')) {
-        continue;
+        const extension = path.extname(entry.name).toLowerCase();
+        if (!SUPPORTED_EXTENSIONS.has(extension)) continue;
+        classes.push(...scanFile(entryPath));
     }
 
-    const filePath = `examples/${file}`;
-    const fileClasses = scanFile(filePath);
-
-    allClasses.push(...fileClasses);
+    return classes;
 }
 
-const uniqueClasses = [...new Set(allClasses)];
+export function scan(directory: string): string[] {
+    return [...new Set(scanDirectory(directory))];
+}
 
-const parsedClasses = parseClasses(uniqueClasses);
-
-console.log(parsedClasses);
+export function compile(directory: string): string {
+    return generateCSS(parseClasses(scan(directory)));
+}
