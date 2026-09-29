@@ -27,7 +27,8 @@
     "node": ">=20"
   },
   "scripts": {
-    "build": "tsc",
+    "clean": "node -e \"require('node:fs').rmSync('dist',{recursive:true,force:true})\"",
+    "build": "npm run clean && tsc",
     "dev": "tsc --watch",
     "test": "npm run build && node --test \"test/**/*.test.js\"",
     "docs": "npm run build && node scripts/generate-docs.mjs",

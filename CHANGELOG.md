@@ -73,6 +73,8 @@ warning.
 
 ### Infrastructure
 
+- `npm run build` clears `dist/` before compiling, so output left over from an older
+  source layout can never be packed into a release.
 - `dist/` is built on install (`prepare`) and the published package contains only
   `dist/`, `docs/`, `images/`, `README.md` and `LICENSE`.
 - Node 20 or newer is required.
