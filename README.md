@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="images/icon.png" alt="StratumSS" width="220">
+<img src="https://raw.githubusercontent.com/reubqnL/StratumSS/main/images/icon.png" alt="StratumSS" width="220">
 
 # StratumSS
 
@@ -10,9 +10,9 @@ Class names read like the CSS they produce. The compiler scans your source files
 and writes a stylesheet containing only the utilities you actually used.
 
 [![npm version](https://img.shields.io/npm/v/stratumss?color=2563eb)](https://www.npmjs.com/package/stratumss)
-[![license](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
-[![node](https://img.shields.io/badge/node-%3E%3D20-339933)](package.json)
-[![tests](https://img.shields.io/badge/tests-70%20passing-16a34a)](test)
+[![license](https://img.shields.io/badge/license-MIT-blue)](https://github.com/reubqnL/StratumSS/blob/main/LICENSE)
+[![node](https://img.shields.io/badge/node-%3E%3D20-339933)](https://github.com/reubqnL/StratumSS/blob/main/package.json#L36-L38)
+[![tests](https://img.shields.io/badge/tests-70%20passing-16a34a)](https://github.com/reubqnL/StratumSS/tree/main/test)
 
 </div>
 
@@ -169,7 +169,8 @@ source files ──▶ scanner ──▶ parser ──▶ generator ──▶ st
    cascade rank, de-duplicates, and writes the stylesheet atomically.
 
 Because the table is the single source of truth, `stratumss list` and the
-[generated reference](docs/utilities.md) always match what the compiler accepts.
+[generated reference](https://github.com/reubqnL/StratumSS/blob/main/docs/utilities.md) always match what
+the compiler accepts.
 
 ## Class syntax
 
@@ -240,8 +241,8 @@ npm run demo       # compile the example and serve it at http://localhost:4173
 
 The test suite covers the parser, value validation, the generator's escaping and
 ordering, the scanner's ignore rules, and the CLI end to end (including watch mode).
-Every generated declaration is additionally validated against the CSS specification
-with `css-tree`'s property lexer.
+Every utility in the catalogue is exercised: each declared class and alias resolves,
+each enum value round-trips, and no accepted value can break out of its declaration.
 
 ## Project layout
 
@@ -264,4 +265,4 @@ test/                    test suite
 
 ## License
 
-[MIT](LICENSE)
+[MIT](https://github.com/reubqnL/StratumSS/blob/main/LICENSE)
