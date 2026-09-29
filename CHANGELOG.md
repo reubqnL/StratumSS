@@ -65,6 +65,9 @@ warning.
   one `<link>` and no Node. `npm run cdn` regenerates them from the utility table and
   `test/cdn.test.js` fails if the committed copy drifts or if the new demo
   (`examples/cdn.html`) ever uses a class the file cannot contain.
+- Documented how to consume the framework without the registry, with a comparison of the
+  three routes (registry, Git dependency, linked stylesheet) and a section on wiring
+  `build:css` and `watch:css` into an existing project.
 - Documented installation straight from the repository
   (`npm i -D github:reubqnL/StratumSS#v1.1.0`), which needs no registry listing:
   `prepare` builds `dist/` on install, so the CLI works from a Git dependency.

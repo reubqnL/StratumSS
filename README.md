@@ -40,17 +40,27 @@ Two things separate it from hand-written CSS:
   shipping a broken declaration.
 - **Only what you use is emitted.** One class in your markup, one rule in the file.
 
-## Install
+## Get it
+
+Three ways, depending on what you have and how much you want to install. All three give
+you the same utility table; the difference is whether you get the compiler.
+
+| Route | Command | Needs | Gets |
+| --- | --- | --- | --- |
+| npm registry | `npm i -D stratumss` | Node 20+ | compiler + `stratumss` command |
+| GitHub repository | `npm i -D github:reubqnL/StratumSS#v1.1.0` | Node 20+ and `git` | compiler + `stratumss` command |
+| No install at all | one `<link>`, below | a browser | the 365 value-free utilities |
 
 ```bash
 npm install --save-dev stratumss
-```
-
-```bash
 npx stratumss build src --output public/stratum.css
 ```
 
-Or run it without installing:
+If the first line 404s, use the GitHub route instead: same code, same tag, no registry
+listing. Both are documented under [Installing from Git](#installing-from-git) and
+[Try it without a build step](#try-it-without-a-build-step).
+
+You can also run the compiler without installing it at all:
 
 ```bash
 npx stratumss build
@@ -118,6 +128,38 @@ The generated file (8 utilities from 1 file, 404 B):
 Characters that are not valid in a CSS selector (`#`, `.`, `%`, a leading digit)
 are escaped automatically; the class name in your markup is unchanged.
 
+## Use it in an existing project
+
+Once installed, StratumSS is one command and one `<link>`:
+
+```bash
+npm pkg set 'scripts.build:css=stratumss build src --output public/stratum.css'
+npm pkg set 'scripts.watch:css=stratumss build src --output public/stratum.css --watch --no-header'
+npm run build:css
+```
+
+```html
+<link rel="stylesheet" href="/stratum.css">
+```
+
+Point `src` at your markup and `public` at wherever your site serves assets from — the
+paths are the only thing to change. `npm run watch:css` in a second terminal rewrites the
+stylesheet on save, which is how you want to work: a class you type becomes a rule
+instantly, and a class you delete disappears from the file.
+
+Add `public/stratum.css` to `.gitignore` if you generate it in CI, or commit it if you
+deploy static files. Then put `npm run build:css` in your build step, before whatever
+bundles your assets, so a stale stylesheet is impossible.
+
+The scanner reads `class` and `className` attributes out of real tags and ignores
+`node_modules`, `dist`, `build`, `coverage` and other generated directories, so it is
+safe to run against a whole project. `.html`, `.htm`, `.php`, `.vue`, `.svelte`,
+`.astro`, `.jsx`, `.tsx`, `.md`, `.twig`, `.erb`, `.njk`, `.hbs` and a few more are
+scanned by default; `--extensions` replaces that list and `--exclude` adds directories
+to skip. A build that finds a class it does not know fails, names the file and line, and
+suggests the spelling it thinks you meant — so wiring it into CI is what keeps the
+stylesheet honest over time.
+
 ## Try it without a build step
 
 `cdn/stratum.css` is every utility that carries no value — 365 rules, 20 kB,
@@ -136,24 +178,33 @@ page built entirely from those 365 classes — run `npm run demo` and open
 
 What is deliberately absent is anything whose name contains a value: `padding-16px`,
 `color-#0f172a`, `gap-24px`. There is no fixed set of them to publish until the project
-picks a scale, so a linked stylesheet cannot carry them. Spacing, colour and type
-therefore need the compiler below.
+picks a scale, so a linked stylesheet cannot carry them. For spacing, colour, type
+sizes and anything responsive, install the compiler.
 
-## Install it from Git instead of npm
+## Installing from Git
 
-npm can install a package straight from a repository, which needs no registry entry at
-all — `prepare` runs `tsc` on install, so `dist/` and the `stratumss` command arrive
-ready to use:
+npm can install a package straight from a repository, which needs no registry listing
+at all. `prepare` compiles the TypeScript on install, so `dist/` and the `stratumss`
+command arrive ready to use:
 
 ```bash
 npm install --save-dev github:reubqnL/StratumSS#v1.1.0
 npx stratumss build src --output public/stratum.css
 ```
 
-The `#ref` accepts a tag, a branch or a commit; a tag or commit is immutable, so
-reinstalling a build later gives you the same bytes. The trade is that installs need
-`git` and the devDependencies, and you lose the registry's integrity metadata and
-semver range resolution.
+The `#ref` accepts a tag, a branch or a commit; pin a tag or a commit hash, because
+those are immutable and a later reinstall gives you the same bytes.
+
+Because that install runs a build, it needs `git` and Node on your machine, and it
+needs your npm to allow the package's lifecycle script. Recent npm versions ask before
+running a dependency's install scripts, and if one is skipped the install has no `dist/`,
+so `npx stratumss` reports the command is missing. `npm install-scripts ls` names the
+package and the command to allow it; approve it and rerun the install. Installing
+`stratumss` from the registry needs no scripts at all, because the published tarball
+already contains `dist/`.
+
+You lose the registry's integrity metadata and semver ranges, so pin explicitly and
+keep the lockfile.
 
 ## CLI
 
