@@ -1,10 +1,61 @@
 {
   "name": "stratumss",
-  "version": "1.0.0",
-  "description": "A human-readable utility-first CSS framework with a build-time compiler.",
+  "version": "1.1.0",
+  "description": "A human-readable utility-first CSS framework with a build-time compiler that emits only the CSS you actually use.",
+  "license": "MIT",
   "type": "module",
-  "bin": { "stratumss": "./dist/compiler/index.js" },
-  "scripts": { "build": "tsc", "dev": "tsc --watch", "test": "npm run build && node --test" },
-  "devDependencies": { "@types/node": "^24.0.0", "typescript": "^5.0.0" },
-  "engines": { "node": ">=20" }
+  "bin": {
+    "stratumss": "./dist/compiler/cli.js"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "docs",
+    "images",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "npm run build && node --test \"test/**/*.test.js\"",
+    "docs": "npm run build && node scripts/generate-docs.mjs",
+    "example": "npm run build && node dist/compiler/cli.js build examples --output examples/stratum.css",
+    "demo": "npm run example && node scripts/serve.mjs",
+    "prepare": "npm run build",
+    "prepublishOnly": "npm test"
+  },
+  "keywords": [
+    "css",
+    "css-framework",
+    "utility-first",
+    "atomic-css",
+    "utilities",
+    "compiler",
+    "cli",
+    "frontend"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/reubqnL/StratumSS.git"
+  },
+  "bugs": {
+    "url": "https://github.com/reubqnL/StratumSS/issues"
+  },
+  "homepage": "https://github.com/reubqnL/StratumSS#readme",
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "typescript": "^5.0.0"
+  }
 }

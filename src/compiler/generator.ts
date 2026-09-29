@@ -1,55 +1,119 @@
 import type { ParsedClass } from './parser.js';
+import { assertSafeValue } from './values.js';
 
-function escapeCSSIdentifier(value: string): string {
+/**
+ * Escapes a class name for use in a CSS selector.
+ *
+ * Implements the CSS.escape() algorithm from the CSS Syntax specification:
+ * a leading digit, a leading `-` followed by a digit, and every character that
+ * is not `[A-Za-z0-9_-]` is escaped. Unlike the previous implementation this
+ * also escapes `%`, `.` and `/`, and never leaves a leading digit unescaped.
+ */
+export function escapeCSSIdentifier(value: string): string {
+    if (value === '') return '\\0 ';
+
     let result = '';
 
     for (let i = 0; i < value.length; i++) {
+        const code = value.charCodeAt(i);
         const char = value[i];
-        const code = char.charCodeAt(0);
 
-        if (
-            (code >= 48 && code <= 57 && i === 0) ||
-            (code >= 48 && code <= 57) ||
-            (code >= 65 && code <= 90) ||
-            (code >= 97 && code <= 122) ||
-            char === '-' ||
-            char === '_'
-        ) {
+        if (code === 0x0000) {
+            result += '\uFFFD';
+            continue;
+        }
+
+        const isDigit = code >= 0x30 && code <= 0x39;
+        const isLeadingDigit = isDigit && i === 0;
+        const isSecondDigitAfterDash = isDigit && i === 1 && value.charCodeAt(0) === 0x2d;
+
+        if (isLeadingDigit || isSecondDigitAfterDash) {
+            result += `\\${code.toString(16)} `;
+            continue;
+        }
+
+        if (code >= 0x80 ||
+            char === '-' || char === '_' ||
+            (code >= 0x30 && code <= 0x39) ||
+            (code >= 0x41 && code <= 0x5a) ||
+            (code >= 0x61 && code <= 0x7a)) {
             result += char;
             continue;
         }
 
-        result += `\\${code.toString(16)} `;
+        result += `\\${char}`;
     }
 
-    return result === '' ? '\\0 ' : result;
+    return result;
 }
 
-function validateCSSValue(value: string): void {
-    if (value.length === 0) throw new Error('CSS value cannot be empty.');
-    if (/[\u0000-\u001F\u007F]/.test(value)) throw new Error(`Invalid control character in CSS value: "${value}"`);
-    if (value.includes('{') || value.includes('}')) throw new Error(`Invalid braces in CSS value: "${value}"`);
-    if (value.includes(';')) throw new Error(`Invalid semicolon in CSS value: "${value}"`);
-    if (value.includes('/*') || value.includes('*/')) throw new Error(`Invalid comment syntax in CSS value: "${value}"`);
-}
+/**
+ * Renders a single utility as a CSS rule. Values were validated when the class
+ * was parsed; this is the last line of defence against malformed output.
+ */
+function generateClass(parsed: ParsedClass, minify: boolean): string {
+    assertSafeValue(parsed.value);
 
-function generateClass(parsed: ParsedClass): string {
-    validateCSSValue(parsed.value);
     const className = escapeCSSIdentifier(parsed.className);
+    const value = parsed.value.replace(/ !important$/, '');
+    const important = parsed.value.endsWith(' !important') ? ' !important' : '';
+    const declaration = `${parsed.property}:${value}${important}`;
 
-    return `.${className} {\n    ${parsed.property}: ${parsed.value};\n}`;
+    return minify
+        ? `.${className}{${declaration};}`
+        : `.${className} {\n    ${declaration.replace(':', ': ')};\n}`;
 }
 
-export function generateCSS(parsedClasses: ParsedClass[]): string {
-    const output: string[] = [];
-    const generated = new Set<string>();
+/** Stable ordering: by cascade rank, then alphabetically by class name. */
+export function sortParsedClasses(parsedClasses: readonly ParsedClass[]): ParsedClass[] {
+    return [...parsedClasses].sort((a, b) =>
+        a.rank - b.rank ||
+        a.property.localeCompare(b.property) ||
+        a.className.localeCompare(b.className)
+    );
+}
 
-    for (const parsed of parsedClasses) {
-        const css = generateClass(parsed);
-        if (generated.has(css)) continue;
-        generated.add(css);
-        output.push(css);
+export interface GenerateOptions {
+    /** Collapse the output into a single minified line. */
+    minify?: boolean;
+    /** Banner comment to write at the top of the file. */
+    header?: string;
+}
+
+/**
+ * Turns parsed utilities into a stylesheet.
+ *
+ * Output is deterministic: the same set of classes always produces byte-identical
+ * CSS, regardless of the order in which files were scanned.
+ */
+export function generateCSS(parsedClasses: readonly ParsedClass[], options: GenerateOptions = {}): string {
+    const rules: string[] = [];
+    const seen = new Set<string>();
+
+    const minify = options.minify === true;
+
+    for (const parsed of sortParsedClasses(parsedClasses)) {
+        // Deduplicate on the class name, not on the declaration: `flex` and
+        // `display-flex` share a declaration but need their own selectors.
+        if (seen.has(parsed.className)) continue;
+        seen.add(parsed.className);
+        rules.push(generateClass(parsed, minify));
     }
 
-    return output.length === 0 ? '' : output.join('\n\n') + '\n';
+    if (minify) {
+        const body = rules.join('');
+        return options.header === undefined ? body : `${options.header}${body}`;
+    }
+
+    const body = rules.join('\n\n');
+    const parts: string[] = [];
+
+    if (options.header !== undefined) {
+        parts.push(options.header.trimEnd());
+    }
+    if (body !== '') {
+        parts.push(body);
+    }
+
+    return parts.length === 0 ? '' : parts.join('\n\n') + '\n';
 }

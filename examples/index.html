@@ -2,13 +2,77 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>StratumSS Example</title>
-    <link rel="stylesheet" href="../dist/stratum.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>StratumSS — human-readable utility CSS</title>
+    <link rel="stylesheet" href="stratum.css">
 </head>
-<body>
-    <main class="flex fdirection-col content-horizontal-center items-vertical-center gap-20px width-437px">
-        <h1 class="font-size-32px font-weight-700 color-black">StratumSS</h1>
-        <p class="text-align-center">A human-readable utility-first CSS framework.</p>
+<body class="margin-0 background-color-#f6f8fb color-#0f172a font-family-system-ui">
+
+    <header class="background-color-#0b1220 color-white">
+        <nav class="flex content-horizontal-between items-vertical-center gap-16px max-width-960px margin-inline-auto padding-20px_24px">
+            <span class="font-weight-700 letter-spacing-0.02em">StratumSS</span>
+            <div class="flex gap-20px font-size-14px">
+                <a class="color-#9ecbff text-decoration-none" href="#features">Features</a>
+                <a class="color-#9ecbff text-decoration-none" href="#usage">Usage</a>
+                <a class="color-#9ecbff text-decoration-none" href="https://github.com/reubqnL/StratumSS">GitHub</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="max-width-960px margin-inline-auto padding-48px_24px">
+
+        <section class="flex flex-direction-column items-vertical-center gap-16px text-align-center padding-block-40px">
+            <img class="width-96px height-auto" src="../images/icon.png" alt="StratumSS">
+            <h1 class="font-size-40px font-weight-800 line-height-1.1 margin-0">
+                Write the CSS you actually mean
+            </h1>
+            <p class="font-size-18px line-height-1.6 color-#475569 max-width-620px margin-0">
+                StratumSS is a utility-first CSS framework whose class names read like the
+                declarations they produce. A build-time compiler scans your templates and
+                emits only the rules you use.
+            </p>
+            <div class="flex gap-12px padding-block-8px">
+                <code class="background-color-#e8eef7 border-radius-8px padding-10px_14px font-size-14px">npx stratumss build</code>
+                <code class="background-color-#0b1220 color-#9ecbff border-radius-8px padding-10px_14px font-size-14px">padding-10px_20px</code>
+            </div>
+        </section>
+
+        <section id="features" class="grid grid-template-columns-repeat(3,_minmax(0,_1fr)) gap-20px padding-block-24px">
+            <article class="background-color-white border-1px_solid_#e2e8f0 border-radius-12px padding-24px">
+                <h2 class="font-size-18px font-weight-700 margin-block-0_8px">Readable by default</h2>
+                <p class="font-size-14px line-height-1.6 color-#475569 margin-0">
+                    <code>items-vertical-center</code> maps to <code>align-items: center</code>.
+                    No abbreviations to memorise.
+                </p>
+            </article>
+            <article class="background-color-white border-1px_solid_#e2e8f0 border-radius-12px padding-24px">
+                <h2 class="font-size-18px font-weight-700 margin-block-0_8px">Verified values</h2>
+                <p class="font-size-14px line-height-1.6 color-#475569 margin-0">
+                    <code>padding-4p</code> fails the build with a suggestion instead of
+                    shipping a broken declaration.
+                </p>
+            </article>
+            <article class="background-color-white border-1px_solid_#e2e8f0 border-radius-12px padding-24px">
+                <h2 class="font-size-18px font-weight-700 margin-block-0_8px">Only what you use</h2>
+                <p class="font-size-14px line-height-1.6 color-#475569 margin-0">
+                    The compiler emits one rule per class found in your source files —
+                    nothing more.
+                </p>
+            </article>
+        </section>
+
+        <section id="usage" class="padding-block-24px">
+            <h2 class="font-size-24px font-weight-700 margin-block-24px_12px">What this page compiled to</h2>
+            <pre class="background-color-#0b1220 color-#e2e8f0 border-radius-12px padding-20px overflow-x-auto font-size-13px line-height-1.7 margin-0"><code>stratumss build examples --output examples/stratum.css</code></pre>
+        </section>
+
     </main>
+
+    <footer class="border-top-1px_solid_#e2e8f0">
+        <div class="max-width-960px margin-inline-auto padding-24px font-size-13px color-#64748b">
+            Built with StratumSS · MIT licensed
+        </div>
+    </footer>
+
 </body>
 </html>
